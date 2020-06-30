@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Executor executor = Executors.newSingleThreadExecutor();
     final String TAG="I'm Here"; //for log statements and debugging
+    private boolean reset=true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,104 +169,6 @@ public class MainActivity extends AppCompatActivity {
             }
         }, ContextCompat.getMainExecutor(this));
 
-
-        // Preview preview = new Preview.Builder().build();
-        //PreviewView viewFinder = findViewById(R.id.view_finder);
-
-        //old way
-//        CameraX.unbindAll();
-//        Log.d("got this far", "startCamera: called");
-        //cv helper version
-        // preview = setPreview();
-        // imageAnalysis = setImageAnalysis();
-        //try old method
-//        Rational aspectRatio = new Rational(mTextureView.getWidth(), mTextureView.getHeight());
-//        Size screen = new Size(mTextureView.getWidth(), mTextureView.getHeight());
-//        PreviewConfig previewConfig = new PreviewConfig.Builder()
-//                .setTargetAspectRatio(aspectRatio)
-//                .setTargetResolution(screen)
-//                .build();
-//
-//        preview = new Preview(previewConfig);
-//
-//        preview.setOnPreviewOutputUpdateListener(new Preview.OnPreviewOutputUpdateListener() {
-//            @Override
-//            public void onUpdated(Preview.PreviewOutput output) {
-//                ViewGroup parent = (ViewGroup) mTextureView.getParent();
-//                parent.removeView(mTextureView);
-//                parent.addView(mTextureView);
-//                mTextureView.setSurfaceTexture(output.getSurfaceTexture());
-//                updateTransform();
-//
-//            }
-//        });
-//        Log.d("got this far", "startCamera: preview works");
-//        mBackgroundThread = new HandlerThread("Analyser thread");
-//        mBackgroundThread.start();
-//
-//        ImageAnalysisConfig analysisConfig = new ImageAnalysisConfig.Builder()
-//                .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
-//                .setTargetRotation(Surface.ROTATION_0)
-//                .setImageQueueDepth(1)
-//                .setCallbackHandler(new Handler(mBackgroundThread.getLooper()))
-//                .build();
-//        imageAnalysis = new ImageAnalysis(analysisConfig);
-//
-//        imageAnalysis.setAnalyzer(
-//                new ImageAnalysis.Analyzer() {
-//                    LocalModel localModel =
-//                            new LocalModel.Builder()
-//                                    .setAssetFilePath("model.tflite") //runs with with errors
-//                                    .build();
-//                    CustomImageLabelerOptions customImageLabelerOptions =
-//                            new CustomImageLabelerOptions.Builder(localModel)
-//                                    .setConfidenceThreshold(0.65f)
-//                                    .setMaxResultCount(1)
-//                                    .build();
-//
-//                    ImageLabeler imageLabeler =
-//                            ImageLabeling.getClient(customImageLabelerOptions);
-//
-//                    @Override
-//                    public void analyze(ImageProxy image, int rotationDegrees) {
-//                        //Analyzing live camera feed begins.
-//                        Image mediaImage = image.getImage();
-//                        if (mediaImage != null) {
-//                            InputImage mIImage =
-//                                    InputImage.fromMediaImage(mediaImage, rotationDegrees);
-//                            //above should work as using cameraX
-//
-//                            imageLabeler.process(mIImage)
-//                                    .addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
-//                                        @Override
-//                                        public void onSuccess(List<ImageLabel> labels) {
-//                                            // Task completed successfully
-//                                            for (ImageLabel label : labels) {
-//                                                String text = label.getText();
-//                                                float confidence = label.getConfidence();
-//                                                int index = label.getIndex();
-//                                                Log.d("image anlaysis",
-//                                                        "onSuccess: Image :"+ text +
-//                                                                "\nconfidence : "+confidence+
-//                                                                "\n index :"+index);
-//                                                mTextView.setText(text+" : "+confidence);
-//
-//                                            }
-//                                        }
-//                                    })
-//                                    .addOnFailureListener(new OnFailureListener() {
-//                                        @Override
-//                                        public void onFailure(@NonNull Exception e) {
-//                                            // Task failed with an exception
-//                                            e.printStackTrace();
-//                                        }
-//                                    });
-//                        }
-//                    }
-//                });
-//
-//        //bind to lifecycle:
-//        CameraX.bindToLifecycle(this, preview, imageAnalysis);
     }
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         Log.d(TAG, "bindPreview: ");
@@ -344,36 +247,41 @@ public class MainActivity extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
                                 @Override
                                 public void onSuccess(List<ImageLabel> labels) {
-                                    // Task completed successfully
-                                    for (ImageLabel label : labels) {
-                                        String text = label.getText();
-                                        float confidence = label.getConfidence();
-                                        int index = label.getIndex();
-                                        Log.d("kinda works", "onSuccess: "+ text);
-                                        String word;
-                                        switch (text){
-                                            case "rock":
-                                                // moveRight();//for stage 3/4
-                                                mPosition=2;
-                                                word = myModel.get(mPosition).getWords();
-                                                playWord(word);
-                                                break;
-                                            case "scissors":
-                                                // moveLeft(); //for stage 3/4
-                                                mPosition=1;
-                                                word = myModel.get(mPosition).getWords();
-                                                playWord(word);
-                                                break;
-                                            case "paper":
-                                                //for stage 3/4 paper was select and word was defined within
-                                                mPosition=0;
-                                                word = myModel.get(mPosition).getWords();
-                                                playWord(word);
-                                                break;
-                                            default:
-                                                Log.d("switch on text", "eroor");
-                                        }
+                                    Log.d(TAG, "onSuccess: making labels");
+                                    if(labels.isEmpty()){
+                                        reset=true;
                                     }
+                                    if(reset) {
+                                        for (ImageLabel label : labels) {
+                                            String text = label.getText();
+                                            float confidence = label.getConfidence();
+                                            int index = label.getIndex();
+                                            Log.d("kinda works", "onSuccess: " + text);
+                                            String word;
+                                            switch (text) {
+                                                case "rock":
+                                                    mPosition = 2;
+                                                    word = myModel.get(mPosition).getWords();
+                                                    playWord(word);
+                                                    break;
+                                                case "scissors":
+                                                    mPosition = 1;
+                                                    word = myModel.get(mPosition).getWords();
+                                                    playWord(word);
+                                                    break;
+                                                case "paper":
+                                                    mPosition = 0;
+                                                    word = myModel.get(mPosition).getWords();
+                                                    playWord(word);
+                                                    break;
+                                                default:
+                                                    Log.d("switch on text", "eroor");
+                                            }
+                                            reset = false;
+                                        }
+                                      
+                                    }
+
                                     imageProxy.close(); //seems to be needed to set up pipeline
                                 }
                             })
