@@ -65,11 +65,6 @@ import java.util.concurrent.Executors;
 public class MainActivity extends AppCompatActivity {
     //varibles needed eg text to speach object, word strings etc
     private TextToSpeech mTextToSpeech;
-    private String mYes = "yes";
-    private String mNo= "no";
-    private String mHelp="help";
-    private String mFood= "food";
-    private String mToilet= "toilet";
     private ArrayList<MyModel> myModel;
     private int mPosition = 0;
     private int REQUEST_CODE_PERMISSIONS =101;
@@ -82,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Executor executor = Executors.newSingleThreadExecutor();
     final String TAG="I'm Here"; //for log statements and debugging
-    private boolean reset=true;
+    private  int indexCheck=-1; //set to an unreachable index to ensure no future additional words dont go missed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -115,15 +110,18 @@ public class MainActivity extends AppCompatActivity {
             MyModel model = new MyModel(icons[i], words[i]);
             myModel.add(model);
         }
+        //declaring on screen attributes and associating them
         mImageView = findViewById(R.id.word_icon);
-        mRightButton = (ImageButton) findViewById(R.id.right_button);
-        mLeftButton = (ImageButton) findViewById(R.id.left_button);
+        mRightButton =  findViewById(R.id.right_button);
+        mLeftButton =  findViewById(R.id.left_button);
+        //ensuring all nessesary permissions are granted
         if(allPermissionGranted()){
             startCamera();
         }else{
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,
                     REQUEST_CODE_PERMISSIONS);
         }
+        //to use on screen button controls
         mRightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -136,7 +134,6 @@ public class MainActivity extends AppCompatActivity {
                moveLeft();
             }
         });
-
         mImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -146,8 +143,9 @@ public class MainActivity extends AppCompatActivity {
 
         });
     }
-    private boolean allPermissionGranted() {
 
+    private boolean allPermissionGranted() {
+//request permissions needed
         for(String permission : REQUIRED_PERMISSIONS){
             if(ContextCompat.checkSelfPermission(this, permission)
                     != PackageManager.PERMISSION_GRANTED){
@@ -156,13 +154,15 @@ public class MainActivity extends AppCompatActivity {
         }
         return true;
     }
+
     private void startCamera() {
         Log.d(TAG, "startCamera: ");
+        //open and bind camera for cameraX implimentation
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
         cameraProviderFuture.addListener(() -> {
             try {
                 ProcessCameraProvider cameraProvider = cameraProviderFuture.get();
-                bindPreview(cameraProvider);
+                bindPreview(cameraProvider); //also has analisie
             } catch (ExecutionException | InterruptedException e) {
                 // No errors need to be handled for this Future.
                 // This should never be reached.
@@ -170,24 +170,29 @@ public class MainActivity extends AppCompatActivity {
         }, ContextCompat.getMainExecutor(this));
 
     }
+
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
         Log.d(TAG, "bindPreview: ");
+        //set up depemdancies for camera, preview and analysis in cameraX
         Preview preview = new Preview.Builder()
                 .build();
 
         CameraSelector cameraSelector = new CameraSelector.Builder()
                 .requireLensFacing(CameraSelector.LENS_FACING_BACK)
+                //hard coded so there is no option to change and face child user
                 .build();
+
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                 .setTargetResolution(new Size(1280, 720))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build();
+
         preview.setSurfaceProvider(mTextureView.createSurfaceProvider());
         imageAnalysis.setAnalyzer(executor, new ImageAnalysis.Analyzer() {
+            //could change to lamda expression howeve supress warning is required
             @SuppressLint("UnsafeExperimentalUsageError")
             @Override
             public void analyze(@NonNull ImageProxy imageProxy) {
-                int rotationDegrees = imageProxy.getImageInfo().getRotationDegrees();
                 if ((imageProxy == null) || (imageProxy.getImage() == null)) {
                     return;
                 }else{
@@ -195,51 +200,20 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "analyze: ");
                     InputImage image =
                             InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-                    // Pass image to an ML Kit Vision API
-                    //object dect not working with Auto vision modle, maybe need new moddle trainer..
-//                    LocalModel localModel =
-//                            new LocalModel.Builder()
-//                                    .setAssetFilePath("model.tflite")
-//                                    // or .setAbsoluteFilePath(absolute file path to tflite model)
-//                                    .build();
-//                    CustomObjectDetectorOptions customObjectDetectorOptions =
-//                            new CustomObjectDetectorOptions.Builder(localModel)
-//                                    .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
-//                                    .enableClassification()
-//                                    .setClassificationConfidenceThreshold(0.5f)
-//                                    .setMaxPerObjectLabelCount(3)
-//                                    .build();
-//                    ObjectDetector objectDetector =
-//                            ObjectDetection.getClient(customObjectDetectorOptions);
-//                    objectDetector
-//                            .process(image)
-//                            .addOnFailureListener(e -> {
-//
-//                            })
-//                            .addOnSuccessListener(results -> {
-//                                Log.d(TAG, "analyze: in on success");
-//                                    for (DetectedObject detectedObject : results) {
-//                                        Rect boundingBox = detectedObject.getBoundingBox();
-//                                        Integer trackingId = detectedObject.getTrackingId();
-//                                        for (DetectedObject.Label label : detectedObject.getLabels()) {
-//                                            String text = label.getText();
-//                                            int index = label.getIndex();
-//                                            float confidence = label.getConfidence();
-//                                            mTextView.setText(text+" : "+confidence);
-//                                        }
-//                                    }
-//                            });
+//load and create local model for ml kit
                     AutoMLImageLabelerLocalModel localModel =
                             new AutoMLImageLabelerLocalModel.Builder()
                                     .setAssetFilePath("manifest.json")
                                     // or .setAbsoluteFilePath(absolute file path to manifest file)
                                     .build();
                     Log.d(TAG, "analyze: local modle loaded");
+                    //set the confidence thresehold
+                    // try 0.45 with new check!
                     AutoMLImageLabelerOptions autoMLImageLabelerOptions =
                             new AutoMLImageLabelerOptions.Builder(localModel)
-                                    .setConfidenceThreshold(0.65f)  // Evaluate your model in the Firebase console
-                                    // to determine an appropriate value.
+                                    .setConfidenceThreshold(0.65f)
                                     .build();
+
                     ImageLabeler labeler = ImageLabeling.getClient(autoMLImageLabelerOptions);
                     Log.d(TAG, "analyze: labeler made");
 
@@ -248,16 +222,15 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(List<ImageLabel> labels) {
                                     Log.d(TAG, "onSuccess: making labels");
-                                    if(labels.isEmpty()){
-                                        reset=true;
-                                    }
-                                    if(reset) {
-                                        for (ImageLabel label : labels) {
-                                            String text = label.getText();
-                                            float confidence = label.getConfidence();
-                                            int index = label.getIndex();
-                                            Log.d("kinda works", "onSuccess: " + text);
-                                            String word;
+
+                                    for (ImageLabel label : labels) {
+
+                                        String text = label.getText();
+                                        float confidence = label.getConfidence();
+                                        int index = label.getIndex();
+                                        Log.d("kinda works", "onSuccess: " + text + " : " + index);
+                                        String word;
+                                        if (index != indexCheck) {
                                             switch (text) {
                                                 case "rock":
                                                     mPosition = 2;
@@ -275,31 +248,37 @@ public class MainActivity extends AppCompatActivity {
                                                     playWord(word);
                                                     break;
                                                 default:
-                                                    Log.d("switch on text", "eroor");
+                                                    Log.d("switch on text", "error");
                                             }
-                                            reset = false;
                                         }
-                                      
+                                        indexCheck = index;
+                                        //set to false to avoid irratating "yes,yes,yes,yes,yes"
+                                        //hand needs to be removed from image
+                                        //still some false positives registered
+
                                     }
 
-                                    imageProxy.close(); //seems to be needed to set up pipeline
-                                }
+
+
+                                    imageProxy.close(); //needed to set up pipeline for next image
+                            }
                             })
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     // Task failed with an exception
-                                    Log.d("sorta works", "onFailure: fuck");
+                                    Log.d("sorta works", "onFailure: ... idiot"); //get rid of swear mark
                                     imageProxy.close();
                                 }
                             });
 
                 }
-                // imageProxy.close();
             }
         });
 
-        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this, cameraSelector, preview,imageAnalysis);
+        //bind to lifecycle of app, means all other threads close with app closure auoit
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner)this,
+                cameraSelector, preview,imageAnalysis);
 
     }
     public void moveRight(){
