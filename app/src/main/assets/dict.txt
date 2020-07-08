@@ -1,3 +1,5 @@
-scissors
-paper
-rock
+Toilet
+Help
+No
+Food
+Yes

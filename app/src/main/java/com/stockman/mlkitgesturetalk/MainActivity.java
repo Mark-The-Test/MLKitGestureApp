@@ -101,9 +101,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //Int array to hold the drawables
-        Integer[] icons = {R.drawable.yes_icon,R.drawable.ni_icon,R.drawable.help_icon};
+        Integer[] icons = {R.drawable.toilet_icon,R.drawable.help_icon,
+                R.drawable.ni_icon,R.drawable.food_icon,R.drawable.yes_icon};
         //String ArrayFor words
-        String[] words = {"yes", "no","help"};
+        String[] words = {"Toilet", "Help","No", "Food", "Yes"};
         //setupArrayList
         myModel = new ArrayList<>();
         for (int i =0; i<icons.length; i++){
@@ -211,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
                     // try 0.45 with new check!
                     AutoMLImageLabelerOptions autoMLImageLabelerOptions =
                             new AutoMLImageLabelerOptions.Builder(localModel)
-                                    .setConfidenceThreshold(0.65f)
+                                    .setConfidenceThreshold(0.6f)
                                     .build();
 
                     ImageLabeler labeler = ImageLabeling.getClient(autoMLImageLabelerOptions);
@@ -229,27 +230,9 @@ public class MainActivity extends AppCompatActivity {
                                         float confidence = label.getConfidence();
                                         int index = label.getIndex();
                                         Log.d("kinda works", "onSuccess: " + text + " : " + index);
-                                        String word;
                                         if (index != indexCheck) {
-                                            switch (text) {
-                                                case "rock":
-                                                    mPosition = 2;
-                                                    word = myModel.get(mPosition).getWords();
-                                                    playWord(word);
-                                                    break;
-                                                case "scissors":
-                                                    mPosition = 1;
-                                                    word = myModel.get(mPosition).getWords();
-                                                    playWord(word);
-                                                    break;
-                                                case "paper":
-                                                    mPosition = 0;
-                                                    word = myModel.get(mPosition).getWords();
-                                                    playWord(word);
-                                                    break;
-                                                default:
-                                                    Log.d("switch on text", "error");
-                                            }
+                                            mPosition=index;
+                                            playWord(text);
                                         }
                                         indexCheck = index;
                                         //set to false to avoid irratating "yes,yes,yes,yes,yes"
@@ -257,8 +240,6 @@ public class MainActivity extends AppCompatActivity {
                                         //still some false positives registered
 
                                     }
-
-
 
                                     imageProxy.close(); //needed to set up pipeline for next image
                             }

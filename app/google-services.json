@@ -1,121 +1,34 @@
 {
   "project_info": {
-    "project_number": "960857002406",
-    "firebase_url": "https://mltest-aa2ce.firebaseio.com",
-    "project_id": "mltest-aa2ce",
-    "storage_bucket": "mltest-aa2ce.appspot.com"
+    "project_number": "172958636194",
+    "firebase_url": "https://gesturetalk-f1045.firebaseio.com",
+    "project_id": "gesturetalk-f1045",
+    "storage_bucket": "gesturetalk-f1045.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:960857002406:android:45a41580b72c7bd7a53f67",
-        "android_client_info": {
-          "package_name": "com.stockman.gesturecomiunicate"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBFFawaJJySIFTnzIZvjxMT-oD23ntL_LQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:960857002406:android:09e56d390335dfc6a53f67",
+        "mobilesdk_app_id": "1:172958636194:android:774cc10f57390f67675ffb",
         "android_client_info": {
           "package_name": "com.stockman.mlkitgesturetalk"
         }
       },
       "oauth_client": [
         {
-          "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
+          "client_id": "172958636194-s89kjkd3phnggrc94dqp3nf497n1hrms.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBFFawaJJySIFTnzIZvjxMT-oD23ntL_LQ"
+          "current_key": "AIzaSyAvraCUBCn6n2wCZbN1qCvcD3S-HUljweI"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:960857002406:android:e4c4c5497b06343ba53f67",
-        "android_client_info": {
-          "package_name": "com.stockman.mltest1"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBFFawaJJySIFTnzIZvjxMT-oD23ntL_LQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:960857002406:android:048d149ebd5a4006a53f67",
-        "android_client_info": {
-          "package_name": "com.stockman.mltest2"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBFFawaJJySIFTnzIZvjxMT-oD23ntL_LQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "960857002406-3f3564pdss0dlf3sf4mfr2v8bd6hfukl.apps.googleusercontent.com",
+              "client_id": "172958636194-s89kjkd3phnggrc94dqp3nf497n1hrms.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
