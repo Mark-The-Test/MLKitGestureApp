@@ -211,6 +211,7 @@ public class MainActivity extends AppCompatActivity {
                             InputImage image =
                                     InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
                             //load and create local model for ml kit
+                            //testpush
                             AutoMLImageLabelerLocalModel localModel =
                                     new AutoMLImageLabelerLocalModel.Builder()
                                             .setAssetFilePath("manifest.json")
