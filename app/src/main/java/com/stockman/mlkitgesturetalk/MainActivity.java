@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private TextToSpeech mTextToSpeech;
     private ArrayList<MyModel> myModel;
     private int mPosition = 0;
-    private int REQUEST_CODE_PERMISSIONS =101;
+    private int REQUEST_CODE_PERMISSIONS = 101;
     private String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA",
             "android.permission.WRITE_EXTERNAL_STORAGE"};
     private ImageView mImageView;
@@ -84,8 +84,8 @@ public class MainActivity extends AppCompatActivity {
     private PreviewView mTextureView;
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private Executor executor = Executors.newSingleThreadExecutor();
-    final String TAG="I'm Here"; //for log statements and debugging
-    private  int indexCheck=-1; //set to an unreachable index to ensure no future additional words dont go missed
+    final String TAG = "I'm Here"; //for log statements and debugging
+    private int indexCheck = -1; //set to an unreachable index to ensure no future additional words dont go missed
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,25 +108,30 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+        //Help
+        //Toilet
+        //No
+        //Yes
+        //Food
         //Int array to hold the drawables
-        Integer[] icons = {R.drawable.toilet_icon,R.drawable.help_icon,
-                R.drawable.ni_icon,R.drawable.food_icon,R.drawable.yes_icon};
+        Integer[] icons = {R.drawable.help_icon, R.drawable.toilet_icon,
+                R.drawable.ni_icon, R.drawable.yes_icon, R.drawable.food_icon};
         //String ArrayFor words
-        String[] words = {"Toilet", "Help","No", "Food", "Yes"};
+        String[] words = {"Help", "Toilet", "No", "Yes", "Food"};
         //setupArrayList
         myModel = new ArrayList<>();
-        for (int i =0; i<icons.length; i++){
+        for (int i = 0; i < icons.length; i++) {
             MyModel model = new MyModel(icons[i], words[i]);
             myModel.add(model);
         }
         //declaring on screen attributes and associating them
         mImageView = findViewById(R.id.word_icon);
-        mRightButton =  findViewById(R.id.right_button);
-        mLeftButton =  findViewById(R.id.left_button);
+        mRightButton = findViewById(R.id.right_button);
+        mLeftButton = findViewById(R.id.left_button);
         //ensuring all nessesary permissions are granted
-        if(allPermissionGranted()){
+        if (allPermissionGranted()) {
             startCamera();
-        }else{
+        } else {
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS,
                     REQUEST_CODE_PERMISSIONS);
         }
@@ -134,13 +139,13 @@ public class MainActivity extends AppCompatActivity {
         mRightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               moveRight();
+                moveRight();
             }
         });
         mLeftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               moveLeft();
+                moveLeft();
             }
         });
         mImageView.setOnClickListener(new View.OnClickListener() {
@@ -155,9 +160,9 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean allPermissionGranted() {
 //request permissions needed
-        for(String permission : REQUIRED_PERMISSIONS){
-            if(ContextCompat.checkSelfPermission(this, permission)
-                    != PackageManager.PERMISSION_GRANTED){
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (ContextCompat.checkSelfPermission(this, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
                 return false;
             }
         }
@@ -200,73 +205,78 @@ public class MainActivity extends AppCompatActivity {
         imageAnalysis.setAnalyzer(executor, new ImageAnalysis.Analyzer() {
             //could change to lamda expression howeve supress warning is required
             @SuppressLint("UnsafeExperimentalUsageError")
-              @Override
+            @Override
             //labeller
-                    public void analyze(@NonNull ImageProxy imageProxy) {
-                        if ((imageProxy == null) || (imageProxy.getImage() == null)) {
-                            return;
-                        } else {
-                            @SuppressLint("UnsafeExperimentalUsageError") Image mediaImage = imageProxy.getImage();
-                            Log.d(TAG, "analyze: ");
-                            InputImage image =
-                                    InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-                            //load and create local model for ml kit
-                            AutoMLImageLabelerLocalModel localModel =
-                                    new AutoMLImageLabelerLocalModel.Builder()
-                                            .setAssetFilePath("manifest.json")
-                                            // or .setAbsoluteFilePath(absolute file path to manifest file)
-                                            .build();
-                            Log.d(TAG, "analyze: local modle loaded");
-                            //set the confidence thresehold
-                            // try 0.45 with new check!
-                            AutoMLImageLabelerOptions autoMLImageLabelerOptions =
-                                    new AutoMLImageLabelerOptions.Builder(localModel)
-                                            .setConfidenceThreshold(0.5f)
-                                            .build();
+            public void analyze(@NonNull ImageProxy imageProxy) {
+                if ((imageProxy == null) || (imageProxy.getImage() == null)) {
+                    return;
+                } else {
+                    @SuppressLint("UnsafeExperimentalUsageError") Image mediaImage = imageProxy.getImage();
+                    Log.d(TAG, "analyze: ");
+                    InputImage image =
+                            InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
+                    //load and create local model for ml kit
+                    AutoMLImageLabelerLocalModel localModel =
+                            new AutoMLImageLabelerLocalModel.Builder()
+                                    .setAssetFilePath("manifest.json")
+                                    // or .setAbsoluteFilePath(absolute file path to manifest file)
+                                    .build();
+                    Log.d(TAG, "analyze: local modle loaded");
+                    //set the confidence thresehold
+                    // try 0.45 with new check!
+                    AutoMLImageLabelerOptions autoMLImageLabelerOptions =
+                            new AutoMLImageLabelerOptions.Builder(localModel)
+                                    .setConfidenceThreshold(0.55f)
+                                    .build();
 
-                            ImageLabeler labeler = ImageLabeling.getClient(autoMLImageLabelerOptions);
-                            Log.d(TAG, "analyze: labeler made");
+                    ImageLabeler labeler = ImageLabeling.getClient(autoMLImageLabelerOptions);
+                    Log.d(TAG, "analyze: labeler made");
 
-                            labeler.process(image)
-                                    .addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
-                                        @Override
-                                        public void onSuccess(List<ImageLabel> labels) {
-                                            Log.d(TAG, "onSuccess: making labels");
+                    labeler.process(image)
+                            .addOnSuccessListener(new OnSuccessListener<List<ImageLabel>>() {
+                                @Override
+                                public void onSuccess(List<ImageLabel> labels) {
+                                    Log.d(TAG, "onSuccess: making labels");
 
-                                            for (ImageLabel label : labels) {
-
-                                                String text = label.getText();
-                                                float confidence = label.getConfidence();
-                                                int index = label.getIndex();
-                                                Log.d("kinda works", "onSuccess: " + text + " : " + index);
-                                                if (index != indexCheck) {
-                                                    mPosition = index;
+                                    for (ImageLabel label : labels) {
+                                        String text = label.getText();
+                                        float confidence = label.getConfidence();
+                                        int index = label.getIndex();
+                                        Log.d("kinda works", "onSuccess: " + text + " : " + index + " : " + confidence);
+                                        if (index != indexCheck) {
+                                            for (int i = 0; i < myModel.size(); i++) {
+                                                if (myModel.get(i).getWords().equals(text)) {
+                                                    mPosition = i;
                                                     playWord(text);
+                                                    Log.d(TAG, "onSuccess: loop " + i);
                                                 }
-                                                indexCheck = index;
-                                                //set to false to avoid irratating "yes,yes,yes,yes,yes"
-                                                //hand needs to be removed from image
-                                                //still some false positives registered
-
                                             }
 
-                                            imageProxy.close(); //needed to set up pipeline for next image
                                         }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            // Task failed with an exception
-                                            Log.d("sorta works", "onFailure: ... idiot"); //get rid of swear mark
-                                            imageProxy.close();
-                                        }
-                                    });
-                            //try making an object detector to improve accuracy??
+                                        indexCheck = index;
+                                        //set to false to avoid irratating "yes,yes,yes,yes,yes"
+                                        //hand needs to be removed from image
+                                        //still some false positives registered
+                                    }
 
-                        }
-                    }
+
+                                    imageProxy.close(); //needed to set up pipeline for next image
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Task failed with an exception
+                                    Log.d("sorta works", "onFailure: ... idiot"); //get rid of swear mark
+                                    imageProxy.close();
+                                }
+                            });
+                    //try making an object detector to improve accuracy??
+
+                }
+            }
             //object dectero
-          //  @Override
+            //  @Override
 //            public void analyze(ImageProxy imageProxy) {
 //                Image mediaImage = imageProxy.getImage();
 //                if (mediaImage != null) {
@@ -310,49 +320,46 @@ public class MainActivity extends AppCompatActivity {
 //                            });
 //                }
 //            }
-            });
+        });
 
-
-
-                //bind to lifecycle of app, means all other threads close with app closure auoit
-                Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this,
-                        cameraSelector, preview, imageAnalysis);
-
-            }
-
-            public void moveRight() {
-                if (mPosition == (myModel.size() - 1)) {
-                    mPosition = 0;
-                } else {
-                    mPosition = mPosition + 1;
-                }
-                Log.d("rightarrow", "onClick: " + mPosition);
-                Integer image = myModel.get(mPosition).getIcons();
-                mImageView.setImageResource(image);
-            }
-
-            public void moveLeft() {
-                if (mPosition == 0) {
-                    mPosition = myModel.size() - 1;
-                } else {
-                    mPosition = mPosition - 1;
-                }
-                Log.d("lefttarrow", "onClick: " + mPosition);
-                Integer image = myModel.get(mPosition).getIcons();
-                mImageView.setImageResource(image);
-            }
-
-            public void playWord(String word) {
-
-                mTextToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, "word spoken");
-                Integer image = myModel.get(mPosition).getIcons();
-                Toast toastImage = new Toast(MainActivity.this);
-                toastImage.setGravity(Gravity.CENTER, 0, 0);
-                ImageView symbolView = new ImageView(MainActivity.this);
-                symbolView.setImageResource(image);
-                toastImage.setView(symbolView);
-                toastImage.show();
-            }
-
+        //bind to lifecycle of app, means all other threads close with app closure auoit
+        Camera camera = cameraProvider.bindToLifecycle((LifecycleOwner) this,
+                cameraSelector, preview, imageAnalysis);
 
     }
+
+    public void moveRight() {
+        if (mPosition == (myModel.size() - 1)) {
+            mPosition = 0;
+        } else {
+            mPosition = mPosition + 1;
+        }
+        Log.d("rightarrow", "onClick: " + mPosition);
+        Integer image = myModel.get(mPosition).getIcons();
+        mImageView.setImageResource(image);
+    }
+
+    public void moveLeft() {
+        if (mPosition == 0) {
+            mPosition = myModel.size() - 1;
+        } else {
+            mPosition = mPosition - 1;
+        }
+        Log.d("lefttarrow", "onClick: " + mPosition);
+        Integer image = myModel.get(mPosition).getIcons();
+        mImageView.setImageResource(image);
+    }
+
+    public void playWord(String word) {
+
+        mTextToSpeech.speak(word, TextToSpeech.QUEUE_FLUSH, null, "word spoken");
+        Integer image = myModel.get(mPosition).getIcons();
+        Toast toastImage = new Toast(MainActivity.this);
+        toastImage.setGravity(Gravity.CENTER, 0, 0);
+        ImageView symbolView = new ImageView(MainActivity.this);
+        symbolView.setImageResource(image);
+        toastImage.setView(symbolView);
+        toastImage.show();
+    }
+
+}
