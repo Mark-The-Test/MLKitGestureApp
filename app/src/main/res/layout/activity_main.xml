@@ -51,7 +51,7 @@
         android:adjustViewBounds="true"
         android:background="@color/colorPrimary"
         android:scaleType="fitCenter"
-        android:src="@drawable/yes_icon"
+        android:src="@drawable/help_icon"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/right_button"
         app:layout_constraintStart_toEndOf="@+id/left_button"

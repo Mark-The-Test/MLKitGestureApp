@@ -2,6 +2,7 @@ package com.stockman.mlkitgesturetalk;
 
 import android.view.View;
 
+import androidx.camera.view.PreviewView;
 import androidx.test.rule.ActivityTestRule;
 
 import org.junit.After;
@@ -37,11 +38,19 @@ public class MainActivityTest {
     public void testAppLaunch(){
         View view = mActivity.findViewById(R.id.word_icon);
         assertNotNull(view);
+        PreviewView previewView = mActivity.findViewById(R.id.textureView);
+        assertNotNull(previewView);
     }
 
     @Test
     public void onClickTests() {
+        //needs assert to show that the icon in the cere cjhanges
+        onView(withId(R.id.right_button)).perform(click());
         onView(withId(R.id.word_icon)).perform(click());
+        //change icon needs checked
+        onView(withId(R.id.left_button)).perform(click());
+        onView(withId(R.id.word_icon)).perform(click());
+
 
     }
 

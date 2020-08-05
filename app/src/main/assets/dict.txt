@@ -1,5 +1,5 @@
-Yes
-Food
-Help
 No
+Food
+Yes
+Help
 Toilet

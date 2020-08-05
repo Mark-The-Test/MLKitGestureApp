@@ -108,11 +108,11 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        //Help
-        //Toilet
-        //No
-        //Yes
-        //Food
+//        No
+//            Food
+//        Yes
+//                Help
+//        Toilet
         //Int array to hold the drawables
         Integer[] icons = {R.drawable.help_icon, R.drawable.toilet_icon,
                 R.drawable.ni_icon, R.drawable.yes_icon, R.drawable.food_icon};
@@ -275,51 +275,6 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }
-            //object dectero
-            //  @Override
-//            public void analyze(ImageProxy imageProxy) {
-//                Image mediaImage = imageProxy.getImage();
-//                if (mediaImage != null) {
-//                    InputImage image =
-//                            InputImage.fromMediaImage(mediaImage, imageProxy.getImageInfo().getRotationDegrees());
-//                    LocalModel localModel =
-//                            new LocalModel.Builder()
-//                                    .setAssetFilePath("model.tflite") //try model.tflite manifest.json
-//                                    .build();
-//                    Log.d(TAG, "analyze: model loaded");
-//                    CustomObjectDetectorOptions customObjectDetectorOptions =
-//                            new CustomObjectDetectorOptions.Builder(localModel)
-//                                    .setDetectorMode(CustomObjectDetectorOptions.STREAM_MODE)
-//                                    .enableClassification()
-//                                    .setClassificationConfidenceThreshold(0.5f)
-//                                    .setMaxPerObjectLabelCount(3)
-//                                    .build();
-//                    ObjectDetector objectDetector =
-//                            ObjectDetection.getClient(customObjectDetectorOptions);
-//                    objectDetector
-//                            .process(image)
-//                            .addOnFailureListener(e -> {
-//                                e.printStackTrace();
-//                            })
-//                            .addOnSuccessListener(results -> {
-//                                Log.d(TAG, "analyze: in on success");
-//                                for (DetectedObject detectedObject : results) {
-//                                    Rect boundingBox = detectedObject.getBoundingBox();
-//                                    Integer trackingId = detectedObject.getTrackingId();
-//                                    Log.d(TAG, "analyze: tracking id : "+trackingId);
-//                                    Log.d(TAG, "analyze: in for loop");
-//                                    for (DetectedObject.Label label : detectedObject.getLabels()) {
-//                                        String text = label.getText();
-//                                        int index = label.getIndex();
-//                                        float confidence = label.getConfidence();
-//                                        Log.d(TAG, "analyze: "+ text);
-//                                    }
-//
-//                                }
-//
-//                            });
-//                }
-//            }
         });
 
         //bind to lifecycle of app, means all other threads close with app closure auoit
