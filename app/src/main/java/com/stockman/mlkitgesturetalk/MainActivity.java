@@ -1,6 +1,7 @@
 package com.stockman.mlkitgesturetalk;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraSelector;
@@ -21,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.media.Image;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -87,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
     final String TAG = "I'm Here"; //for log statements and debugging
     private int indexCheck = -1; //set to an unreachable index to ensure no future additional words dont go missed
 
+    @RequiresApi(api = Build.VERSION_CODES.DONUT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -226,7 +229,7 @@ public class MainActivity extends AppCompatActivity {
                     // try 0.45 with new check!
                     AutoMLImageLabelerOptions autoMLImageLabelerOptions =
                             new AutoMLImageLabelerOptions.Builder(localModel)
-                                    .setConfidenceThreshold(0.55f)
+                                    .setConfidenceThreshold(0.65f)
                                     .build();
 
                     ImageLabeler labeler = ImageLabeling.getClient(autoMLImageLabelerOptions);
