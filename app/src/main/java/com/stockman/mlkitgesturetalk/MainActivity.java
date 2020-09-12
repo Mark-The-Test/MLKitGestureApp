@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mTextureView = findViewById(R.id.textureView);
-        //set up text to speach object and overwrite methods
+        //set up text to speach object and overwrite methods from android documentations
         mTextToSpeech = new TextToSpeech(getApplicationContext(), new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startCamera() {
+        //guidence came from online guides in kotlin on cameraX
         Log.d(TAG, "startCamera: ");
         //open and bind camera for cameraX implimentation
         cameraProviderFuture = ProcessCameraProvider.getInstance(this);
@@ -161,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     void bindPreview(@NonNull ProcessCameraProvider cameraProvider) {
+        //from android documentations
         Log.d(TAG, "bindPreview: ");
         //set up depemdancies for camera, preview and analysis in cameraX
         Preview preview = new Preview.Builder()
@@ -212,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onSuccess(List<ImageLabel> labels) {
                                     Log.d(TAG, "onSuccess: making labels");
-
+                                  
                                     for (ImageLabel label : labels) {
                                         String text = label.getText();
                                         float confidence = label.getConfidence();
@@ -232,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
                                         //set to false to avoid irratating "yes,yes,yes,yes,yes"
                                         //hand needs to be removed from image
                                         //still some false positives registered
+
                                     }
 
 
